@@ -99,7 +99,7 @@ fn generate_pieces(colour: Colour) -> Side {
             nine: generate_pawn(colour, 6, 6),
             ten: generate_pawn(colour, 7, 7),
             eleven: generate_pawn(colour, 8, 8),
-            twelve: generate_pawn(colour, 8, 7)
+            twelve: generate_pawn(colour, 8, 6)
         }
     }
 }
@@ -110,6 +110,13 @@ pub fn generateBoard() -> Board {
         white_pieces: generate_pieces(Colour::White),
         black_pieces: generate_pieces(Colour::Black)
     }
+}
+
+#[wasm_bindgen]
+pub fn doMove(board: Board, unit: Unit, to_x: u8, to_y: u8) -> Board {
+    let mut resulting_board = board.clone();
+
+    resulting_board
 }
 
 #[wasm_bindgen]
