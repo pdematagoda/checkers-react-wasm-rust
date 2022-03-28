@@ -58,9 +58,9 @@ const Grid = ({ board, onMove }: GridProps) => {
     };
 
     return (<div>
-        {[1,2,3,4,5,6,7,8].reverse().map((x) => {
-            return (<div key={x}>
-                {[1,2,3,4,5,6,7,8].reverse().map((y) => {
+        {[1,2,3,4,5,6,7,8].map((y) => {
+            return (<div key={y}>
+                {[1,2,3,4,5,6,7,8].map((x) => {
             const key = `${x},${y}`;
             const isUnitPresent = unitDictionary.has(key);
 

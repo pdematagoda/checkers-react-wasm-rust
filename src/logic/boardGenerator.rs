@@ -28,7 +28,7 @@ fn generate_pieces(colour: Colour) -> Side {
             nine: generate_pawn(colour, 6, 2),
             ten: generate_pawn(colour, 7, 1),
             eleven: generate_pawn(colour, 7, 3),
-            twelve: generate_pawn(colour, 8, 1)
+            twelve: generate_pawn(colour, 8, 2)
         },
         Colour::Black => Side {
             one: generate_pawn(colour, 1, 7),
