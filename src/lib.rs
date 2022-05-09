@@ -14,7 +14,7 @@ pub fn generateBoard() -> Board {
 }
 
 #[wasm_bindgen]
-pub fn doMove(board: Board, unit: Unit, to_x: u8, to_y: u8) -> Board {
+pub fn doMove(board: Board, unit: Unit, to_x: i8, to_y: i8) -> Board {
     let internal_board = to_internal_board(board);
 
     from_internal_board(do_move(internal_board, unit, to_x, to_y))

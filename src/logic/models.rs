@@ -3,8 +3,8 @@ use std::rc::Rc;
 use wasm_bindgen::prelude::*;
 use std::collections::HashMap;
 
-pub const BoardLength: u8 = 8;
-pub const BoardWidth: u8 = 8; 
+pub const BoardLength: i8 = 8;
+pub const BoardWidth: i8 = 8; 
 
 #[wasm_bindgen]
 #[derive(Copy, Clone, PartialEq, Eq)]
@@ -23,8 +23,8 @@ pub enum UnitType {
 #[wasm_bindgen]
 #[derive(Copy, Clone)]
 pub struct Coordinate {
-    pub x: u8,
-    pub y: u8
+    pub x: i8,
+    pub y: i8
 }
 
 #[wasm_bindgen]
@@ -67,7 +67,7 @@ pub struct InternalBoard {
     pub human_player: Colour
 }
 
-pub fn get_key_for_x_and_y(x: u8, y: u8) -> String {
+pub fn get_key_for_x_and_y(x: i8, y: i8) -> String {
     let key = format!("{}{}", x, y);
 
     key.to_string()

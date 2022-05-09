@@ -1,6 +1,6 @@
 use crate::logic::models::{ Board, Unit, Colour, Side, Coordinate, UnitType };
 
-fn generate_pawn(colour: Colour, x: u8, y: u8) -> Unit {
+fn generate_pawn(colour: Colour, x: i8, y: i8) -> Unit {
     Unit {
         colour: colour,
         unit_type: UnitType::Pawn,

@@ -1,16 +1,17 @@
-use crate::logic::models::InternalBoard;
+use crate::logic::models::BoardLength;
+use crate::logic::models::BoardWidth;
 use std::collections::HashMap;
-use crate::logic::models::{ Board, Unit, Colour, get_key_for_unit, get_key_for_x_and_y };
+use crate::logic::models::{ Board, InternalBoard, Unit, Colour, get_key_for_unit, get_key_for_x_and_y, Coordinate };
 
 use web_sys::console;
 
-pub fn can_do_move(unit: Unit, to_x: u8, to_y: u8) -> bool {
+pub fn can_do_move(unit: &Unit, to_x: i8, to_y: i8) -> bool {
     if (to_x < 1 || to_y < 1) {
         return false;
     }
 
-    let mut x_change = (to_x as i32) - (unit.coordinate.x as i32);
-    let mut y_change = (to_y as i32) - (unit.coordinate.y as i32);
+    let mut x_change = (to_x) - (unit.coordinate.x);
+    let mut y_change = (to_y) - (unit.coordinate.y);
 
     if (unit.colour == Colour::Black) {
         x_change = -x_change;
@@ -20,8 +21,95 @@ pub fn can_do_move(unit: Unit, to_x: u8, to_y: u8) -> bool {
     return x_change == 1 && y_change == 1;
 }
 
-fn perform_move_and_get_active_pieces(active_pieces: HashMap<String, Unit>, unit: Unit, to_x: u8, to_y: u8) -> HashMap<String, Unit> {
-    let mut modified_active_pieces = active_pieces.clone();
+fn validate_move(active_pieces: &HashMap<String, Unit>, piece: &Unit, to_x: i8, to_y: i8) -> bool {
+    if (!can_do_move(&piece, to_x, to_y)) {
+        return false;
+    }
+
+    true
+}
+
+fn get_valid_moves(active_pieces: &HashMap<String, Unit>, piece: &Unit) -> Vec<Coordinate> {
+    let mut possible_moves = Vec::new();
+
+    let can_move_forward = piece.colour == Colour::White;
+    let y_change = if can_move_forward { 1 } else { -1 };
+
+    if can_move_forward {
+        if (piece.coordinate.y < BoardLength) {
+            if (piece.coordinate.x < BoardWidth) {            
+                possible_moves.push(Coordinate {
+                    x: piece.coordinate.x + 1,
+                    y: piece.coordinate.y + y_change
+                })
+            }
+
+            if (piece.coordinate.x > 1) {            
+                possible_moves.push(Coordinate {
+                    x: piece.coordinate.x - 1,
+                    y: piece.coordinate.y + y_change
+                })
+            }
+        }
+    } else {
+        if (piece.coordinate.y > 1) {
+            if (piece.coordinate.x < BoardWidth) {            
+                possible_moves.push(Coordinate {
+                    x: piece.coordinate.x + 1,
+                    y: piece.coordinate.y + y_change
+                })
+            }
+
+            if (piece.coordinate.x > 1) {            
+                possible_moves.push(Coordinate {
+                    x: piece.coordinate.x - 1,
+                    y: piece.coordinate.y + y_change
+                })
+            }
+        }
+    }
+    
+    let mut valid_moves = Vec::new();
+
+    for possible_move in possible_moves.iter() {
+        if (validate_move(active_pieces, piece, possible_move.x, possible_move.y)) {
+            valid_moves.push(*possible_move);
+        }
+    }
+
+    valid_moves
+}
+
+fn get_active_pieces_for_side(active_pieces: &HashMap<String, Unit>, side: Colour) -> Vec<Unit> {
+    let mut pieces = Vec::new();
+
+    for (_, piece) in active_pieces {
+        if (piece.colour == side) {
+            pieces.push(*piece);
+        }
+    }
+
+    pieces
+}
+
+fn do_opposing_move(active_pieces: HashMap<String, Unit>, moved_piece: Unit) -> HashMap<String, Unit> {
+    let opposing_colour = match moved_piece.colour {
+        Colour::Black => Colour::White,
+        Colour::White => Colour::Black
+    };
+
+    let opposing_pieces = get_active_pieces_for_side(&active_pieces, opposing_colour);
+    let piece_to_move = opposing_pieces[0];
+
+    let possible_moves = get_valid_moves(&active_pieces, &piece_to_move);
+
+    let selected_move = possible_moves[0];
+
+    perform_move_and_get_active_pieces(active_pieces, piece_to_move, selected_move.x, selected_move.y)
+}
+
+fn perform_move_and_get_active_pieces(active_pieces: HashMap<String, Unit>, unit: Unit, to_x: i8, to_y: i8) -> HashMap<String, Unit> {
+    let mut modified_active_pieces = active_pieces;
 
     let unit_to_move = modified_active_pieces.remove(&get_key_for_unit(&unit));
 
@@ -39,9 +127,11 @@ fn perform_move_and_get_active_pieces(active_pieces: HashMap<String, Unit>, unit
     modified_active_pieces
 }
 
-pub fn do_move(board: InternalBoard, unit: Unit, to_x: u8, to_y: u8) -> InternalBoard {    
+pub fn do_move(board: InternalBoard, unit: Unit, to_x: i8, to_y: i8) -> InternalBoard {
+    let active_pieces = perform_move_and_get_active_pieces(board.active_pieces, unit, to_x, to_y);
+
     InternalBoard {
-        active_pieces: perform_move_and_get_active_pieces(board.active_pieces, unit, to_x, to_y),
+        active_pieces: do_opposing_move(active_pieces, unit),
         human_player: board.human_player
     }
 }
@@ -51,7 +141,7 @@ mod tests {
     use super::*;
     use crate::logic::models::*;
 
-    fn get_white_unit_with_coords(x: u8, y: u8) -> Unit {
+    fn get_white_unit_with_coords(x: i8, y: i8) -> Unit {
         Unit {
             active: true,
             colour: Colour::White,
@@ -63,7 +153,7 @@ mod tests {
         }
     }
 
-    fn get_black_unit_with_coords(x: u8, y: u8) -> Unit {
+    fn get_black_unit_with_coords(x: i8, y: i8) -> Unit {
         Unit {
             active: true,
             colour: Colour::Black,
@@ -77,26 +167,26 @@ mod tests {
 
     #[test]
     fn white_can_move_forward() {
-        assert_eq!(can_do_move(get_white_unit_with_coords(1, 1), 2, 2), true);
+        assert_eq!(can_do_move(&get_white_unit_with_coords(1, 1), 2, 2), true);
     }
 
     #[test]
     fn white_cannot_move_forward_straight() {
-        assert_eq!(can_do_move(get_white_unit_with_coords(1, 1), 1, 2), false);
+        assert_eq!(can_do_move(&get_white_unit_with_coords(1, 1), 1, 2), false);
     }
 
     #[test]
     fn white_cannot_move_backward_straight() {
-        assert_eq!(can_do_move(get_white_unit_with_coords(5, 5), 4, 5), false);
+        assert_eq!(can_do_move(&get_white_unit_with_coords(5, 5), 4, 5), false);
     }
 
     #[test]
     fn white_cannot_move_backwards_from_a_corner() {
-        assert_eq!(can_do_move(get_white_unit_with_coords(1, 1), 0, 1), false);
+        assert_eq!(can_do_move(&get_white_unit_with_coords(1, 1), 0, 1), false);
     }
 
     #[test]
     fn black_can_move_forward() {
-        assert_eq!(can_do_move(get_black_unit_with_coords(6, 2), 5, 1), true);
+        assert_eq!(can_do_move(&get_black_unit_with_coords(6, 2), 5, 1), true);
     }
 }
