@@ -45,7 +45,12 @@ const Grid = ({ board, onMove }: GridProps) => {
     const [currentSelection, setCurrentSelection] = useState<Unit | null>(null);
 
     const onOccupiedCellSelection = (unit: Unit) => {
-        setCurrentSelection(unit);
+        if (currentSelection) {
+            setCurrentSelection(null);
+            onMove(currentSelection, unit.coordinate.x, unit.coordinate.y);
+        } else {
+            setCurrentSelection(unit);
+        }
     };
 
     const onEmptyCellSelection = (x: number, y: number) => {
@@ -61,23 +66,39 @@ const Grid = ({ board, onMove }: GridProps) => {
         {[1,2,3,4,5,6,7,8].map((y) => {
             return (<div key={y}>
                 {[1,2,3,4,5,6,7,8].map((x) => {
-            const key = `${x},${y}`;
-            const isUnitPresent = unitDictionary.has(key);
+                
+                    const getCellContent = () => {
+                        const key = `${x},${y}`;
+                        const isUnitPresent = unitDictionary.has(key);
+            
+                        if (isUnitPresent) {
+                            const unit = unitDictionary.get(key) as Unit;
+            
+                            return (
+                                <OccupiedCell
+                                    key={key}
+                                    isSelected={currentSelection?.coordinate.y === unit.coordinate.y && currentSelection?.coordinate.x === unit.coordinate.x}
+                                    unit={unit}
+                                    onClick={onOccupiedCellSelection}
+                                    />
+                            );
+                        }
+            
+                        return <EmptyCell key={key} onClick={() => onEmptyCellSelection(x, y)} />;
+                    };
 
-            if (isUnitPresent) {
-                const unit = unitDictionary.get(key) as Unit;
+                    const cellContent = getCellContent();
 
-                return (
-                    <OccupiedCell
-                        key={key}
-                        isSelected={currentSelection?.coordinate.y === unit.coordinate.y && currentSelection?.coordinate.x === unit.coordinate.x}
-                        unit={unit}
-                        onClick={onOccupiedCellSelection}
-                        />
-                );
-            }
+                if (x === 1) {
+                    return (
+                        <>
+                            <div style={{ display: 'inline-block' }}>{y}</div>
+                            {cellContent}
+                        </>
+                    )
+                }
 
-            return <EmptyCell key={key} onClick={() => onEmptyCellSelection(x, y)} />;
+                return cellContent;
           })}
             </div>);
         })}

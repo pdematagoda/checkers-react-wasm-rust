@@ -1,7 +1,13 @@
+use std::cell::RefCell;
+use std::rc::Rc;
 use wasm_bindgen::prelude::*;
+use std::collections::HashMap;
+
+pub const BoardLength: u8 = 8;
+pub const BoardWidth: u8 = 8; 
 
 #[wasm_bindgen]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, PartialEq, Eq)]
 pub enum Colour {
     Black,
     White
@@ -52,4 +58,21 @@ pub struct Side {
 pub struct Board {
     pub white_pieces: Side,
     pub black_pieces: Side,
+    pub human_player: Colour
+}
+
+#[derive(Clone)]
+pub struct InternalBoard {
+    pub active_pieces: HashMap<String, Unit>,
+    pub human_player: Colour
+}
+
+pub fn get_key_for_x_and_y(x: u8, y: u8) -> String {
+    let key = format!("{}{}", x, y);
+
+    key.to_string()
+}
+
+pub fn get_key_for_unit(unit: &Unit) -> String {
+    get_key_for_x_and_y(unit.coordinate.x, unit.coordinate.y)
 }

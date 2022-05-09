@@ -1,5 +1,3 @@
-use wasm_bindgen::prelude::*;
-
 use crate::logic::models::{ Board, Unit, Colour, Side, Coordinate, UnitType };
 
 fn generate_pawn(colour: Colour, x: u8, y: u8) -> Unit {
@@ -50,6 +48,7 @@ fn generate_pieces(colour: Colour) -> Side {
 pub fn generate_board() -> Board {
     Board {
         white_pieces: generate_pieces(Colour::White),
-        black_pieces: generate_pieces(Colour::Black)
+        black_pieces: generate_pieces(Colour::Black),
+        human_player: Colour::Black
     }
 }
