@@ -27,6 +27,14 @@ fn validate_move(active_pieces: &HashMap<String, Unit>, piece: &Unit, to_x: i8, 
         return false;
     }
 
+    let piece_moving_to_key = get_key_for_x_and_y(to_x, to_y);
+
+    let active_piece_at_key = active_pieces.get(&piece_moving_to_key);
+
+    if let Some(active_piece_at_key) = active_piece_at_key {
+        return !(active_piece_at_key.colour == piece.colour);
+    }
+
     true
 }
 
@@ -93,6 +101,27 @@ fn get_active_pieces_for_side(active_pieces: &HashMap<String, Unit>, side: Colou
     pieces
 }
 
+fn find_next_move(active_pieces: &HashMap<String, Unit>, pieces_to_move: Vec<Unit>) -> (Unit, Coordinate) {
+    let piece_index = (random() * 100.0) as usize % pieces_to_move.len();
+    let piece_to_move = pieces_to_move[piece_index];
+    
+    let possible_moves = get_valid_moves(&active_pieces, &piece_to_move);
+
+    if (possible_moves.len() == 0) {
+        console::log_1(&"Need to try again.....".into());
+
+        let mut new_pieces_to_move = pieces_to_move.clone();
+
+        new_pieces_to_move.remove(piece_index);
+
+        return find_next_move(active_pieces, new_pieces_to_move);
+    }
+
+    let selected_move = possible_moves[(random() * 100.0) as usize % possible_moves.len()];
+
+    return (piece_to_move, selected_move)
+}
+
 fn do_opposing_move(active_pieces: HashMap<String, Unit>, moved_piece: Unit) -> HashMap<String, Unit> {
     let opposing_colour = match moved_piece.colour {
         Colour::Black => Colour::White,
@@ -102,13 +131,10 @@ fn do_opposing_move(active_pieces: HashMap<String, Unit>, moved_piece: Unit) -> 
     console::log_1(&"Moving opposing unit".into());
 
     let opposing_pieces = get_active_pieces_for_side(&active_pieces, opposing_colour);
-    let piece_to_move = opposing_pieces[(random() * 100.0) as usize % opposing_pieces.len()];
 
-    let possible_moves = get_valid_moves(&active_pieces, &piece_to_move);
+    let (moving_piece, move_to_take) = find_next_move(&active_pieces, opposing_pieces);
 
-    let selected_move = possible_moves[(random() * 100.0) as usize % possible_moves.len()];
-
-    perform_move_and_get_active_pieces(active_pieces, piece_to_move, selected_move.x, selected_move.y)
+    return perform_move_and_get_active_pieces(active_pieces, moving_piece, move_to_take.x, move_to_take.y);
 }
 
 fn perform_move_and_get_active_pieces(active_pieces: HashMap<String, Unit>, unit: Unit, to_x: i8, to_y: i8) -> HashMap<String, Unit> {
