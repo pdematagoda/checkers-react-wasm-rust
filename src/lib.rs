@@ -4,9 +4,9 @@ use wasm_bindgen::prelude::*;
 
 mod logic;
 
-use self::logic::models::{ Board, Unit, Colour, Side, Coordinate, UnitType };
 use self::logic::board_generator::generate_board;
 use self::logic::board_mover::do_move;
+use self::logic::models::{Board, Colour, Coordinate, Side, Unit, UnitType};
 
 #[wasm_bindgen]
 pub fn generateBoard() -> Board {

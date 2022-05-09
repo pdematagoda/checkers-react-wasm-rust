@@ -1,15 +1,17 @@
+use crate::logic::models::{
+    get_key_for_unit, Board, Colour, Coordinate, InternalBoard, Side, Unit, UnitType,
+};
 use std::collections::HashMap;
-use crate::logic::models::{ Board, InternalBoard, Unit, Colour, Side, Coordinate, UnitType, get_key_for_unit };
 
 use web_sys::console;
 
-fn add_unit_to_active_pieces(unit: Unit, pieces: & mut HashMap<String, Unit>) {
+fn add_unit_to_active_pieces(unit: Unit, pieces: &mut HashMap<String, Unit>) {
     if (unit.active) {
         pieces.insert(get_key_for_unit(&unit), unit);
     }
 }
 
-fn add_side_to_active_pieces(side: Side, pieces: & mut HashMap<String, Unit>) {
+fn add_side_to_active_pieces(side: Side, pieces: &mut HashMap<String, Unit>) {
     add_unit_to_active_pieces(side.one, pieces);
     add_unit_to_active_pieces(side.two, pieces);
     add_unit_to_active_pieces(side.three, pieces);
@@ -22,17 +24,17 @@ fn add_side_to_active_pieces(side: Side, pieces: & mut HashMap<String, Unit>) {
     add_unit_to_active_pieces(side.ten, pieces);
     add_unit_to_active_pieces(side.eleven, pieces);
     add_unit_to_active_pieces(side.twelve, pieces);
-} 
+}
 
 pub fn to_internal_board(board: Board) -> InternalBoard {
     let mut map_of_active_pieces = HashMap::new();
 
-    add_side_to_active_pieces(board.black_pieces, & mut map_of_active_pieces);
-    add_side_to_active_pieces(board.white_pieces, & mut map_of_active_pieces);
+    add_side_to_active_pieces(board.black_pieces, &mut map_of_active_pieces);
+    add_side_to_active_pieces(board.white_pieces, &mut map_of_active_pieces);
 
     InternalBoard {
         human_player: board.human_player,
-        active_pieces: map_of_active_pieces
+        active_pieces: map_of_active_pieces,
     }
 }
 
@@ -40,11 +42,8 @@ fn get_unit(side_pieces: &Vec<Unit>, index: usize, side: Colour) -> Unit {
     let empty_piece: Unit = Unit {
         active: false,
         colour: side,
-        coordinate: Coordinate {
-            x: 1,
-            y: 1
-        },
-        unit_type: UnitType::Pawn
+        coordinate: Coordinate { x: 1, y: 1 },
+        unit_type: UnitType::Pawn,
     };
 
     if (index >= side_pieces.len()) {

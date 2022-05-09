@@ -1,30 +1,30 @@
 use std::cell::RefCell;
+use std::collections::HashMap;
 use std::rc::Rc;
 use wasm_bindgen::prelude::*;
-use std::collections::HashMap;
 
 pub const BoardLength: i8 = 8;
-pub const BoardWidth: i8 = 8; 
+pub const BoardWidth: i8 = 8;
 
 #[wasm_bindgen]
 #[derive(Copy, Clone, PartialEq, Eq)]
 pub enum Colour {
     Black,
-    White
+    White,
 }
 
 #[wasm_bindgen]
 #[derive(Copy, Clone)]
 pub enum UnitType {
     Pawn,
-    King
+    King,
 }
 
 #[wasm_bindgen]
 #[derive(Copy, Clone)]
 pub struct Coordinate {
     pub x: i8,
-    pub y: i8
+    pub y: i8,
 }
 
 #[wasm_bindgen]
@@ -33,7 +33,7 @@ pub struct Unit {
     pub colour: Colour,
     pub unit_type: UnitType,
     pub coordinate: Coordinate,
-    pub active: bool
+    pub active: bool,
 }
 
 #[wasm_bindgen]
@@ -50,7 +50,7 @@ pub struct Side {
     pub nine: Unit,
     pub ten: Unit,
     pub eleven: Unit,
-    pub twelve: Unit
+    pub twelve: Unit,
 }
 
 #[wasm_bindgen]
@@ -58,13 +58,13 @@ pub struct Side {
 pub struct Board {
     pub white_pieces: Side,
     pub black_pieces: Side,
-    pub human_player: Colour
+    pub human_player: Colour,
 }
 
 #[derive(Clone)]
 pub struct InternalBoard {
     pub active_pieces: HashMap<String, Unit>,
-    pub human_player: Colour
+    pub human_player: Colour,
 }
 
 pub fn get_key_for_x_and_y(x: i8, y: i8) -> String {

@@ -1,14 +1,11 @@
-use crate::logic::models::{ Board, Unit, Colour, Side, Coordinate, UnitType };
+use crate::logic::models::{Board, Colour, Coordinate, Side, Unit, UnitType};
 
 fn generate_pawn(colour: Colour, x: i8, y: i8) -> Unit {
     Unit {
         colour: colour,
         unit_type: UnitType::Pawn,
         active: true,
-        coordinate: Coordinate {
-            x: x,
-            y: y
-        }
+        coordinate: Coordinate { x: x, y: y },
     }
 }
 
@@ -26,7 +23,7 @@ fn generate_pieces(colour: Colour) -> Side {
             nine: generate_pawn(colour, 6, 2),
             ten: generate_pawn(colour, 7, 1),
             eleven: generate_pawn(colour, 7, 3),
-            twelve: generate_pawn(colour, 8, 2)
+            twelve: generate_pawn(colour, 8, 2),
         },
         Colour::Black => Side {
             one: generate_pawn(colour, 1, 7),
@@ -40,8 +37,8 @@ fn generate_pieces(colour: Colour) -> Side {
             nine: generate_pawn(colour, 6, 6),
             ten: generate_pawn(colour, 7, 7),
             eleven: generate_pawn(colour, 8, 8),
-            twelve: generate_pawn(colour, 8, 6)
-        }
+            twelve: generate_pawn(colour, 8, 6),
+        },
     }
 }
 
@@ -49,6 +46,6 @@ pub fn generate_board() -> Board {
     Board {
         white_pieces: generate_pieces(Colour::White),
         black_pieces: generate_pieces(Colour::Black),
-        human_player: Colour::Black
+        human_player: Colour::Black,
     }
 }

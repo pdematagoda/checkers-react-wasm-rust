@@ -1,7 +1,9 @@
 use crate::logic::models::BoardLength;
 use crate::logic::models::BoardWidth;
+use crate::logic::models::{
+    get_key_for_unit, get_key_for_x_and_y, Board, Colour, Coordinate, InternalBoard, Unit,
+};
 use std::collections::HashMap;
-use crate::logic::models::{ Board, InternalBoard, Unit, Colour, get_key_for_unit, get_key_for_x_and_y, Coordinate };
 
 use js_sys::Math::random;
 use web_sys::console;
@@ -46,38 +48,38 @@ fn get_valid_moves(active_pieces: &HashMap<String, Unit>, piece: &Unit) -> Vec<C
 
     if can_move_forward {
         if (piece.coordinate.y < BoardLength) {
-            if (piece.coordinate.x < BoardWidth) {            
+            if (piece.coordinate.x < BoardWidth) {
                 possible_moves.push(Coordinate {
                     x: piece.coordinate.x + 1,
-                    y: piece.coordinate.y + y_change
+                    y: piece.coordinate.y + y_change,
                 })
             }
 
-            if (piece.coordinate.x > 1) {            
+            if (piece.coordinate.x > 1) {
                 possible_moves.push(Coordinate {
                     x: piece.coordinate.x - 1,
-                    y: piece.coordinate.y + y_change
+                    y: piece.coordinate.y + y_change,
                 })
             }
         }
     } else {
         if (piece.coordinate.y > 1) {
-            if (piece.coordinate.x < BoardWidth) {            
+            if (piece.coordinate.x < BoardWidth) {
                 possible_moves.push(Coordinate {
                     x: piece.coordinate.x + 1,
-                    y: piece.coordinate.y + y_change
+                    y: piece.coordinate.y + y_change,
                 })
             }
 
-            if (piece.coordinate.x > 1) {            
+            if (piece.coordinate.x > 1) {
                 possible_moves.push(Coordinate {
                     x: piece.coordinate.x - 1,
-                    y: piece.coordinate.y + y_change
+                    y: piece.coordinate.y + y_change,
                 })
             }
         }
     }
-    
+
     let mut valid_moves = Vec::new();
 
     for possible_move in possible_moves.iter() {
@@ -101,10 +103,13 @@ fn get_active_pieces_for_side(active_pieces: &HashMap<String, Unit>, side: Colou
     pieces
 }
 
-fn find_next_move(active_pieces: &HashMap<String, Unit>, pieces_to_move: Vec<Unit>) -> (Unit, Coordinate) {
+fn find_next_move(
+    active_pieces: &HashMap<String, Unit>,
+    pieces_to_move: Vec<Unit>,
+) -> (Unit, Coordinate) {
     let piece_index = (random() * 100.0) as usize % pieces_to_move.len();
     let piece_to_move = pieces_to_move[piece_index];
-    
+
     let possible_moves = get_valid_moves(&active_pieces, &piece_to_move);
 
     if (possible_moves.len() == 0) {
@@ -119,13 +124,16 @@ fn find_next_move(active_pieces: &HashMap<String, Unit>, pieces_to_move: Vec<Uni
 
     let selected_move = possible_moves[(random() * 100.0) as usize % possible_moves.len()];
 
-    return (piece_to_move, selected_move)
+    return (piece_to_move, selected_move);
 }
 
-fn do_opposing_move(active_pieces: HashMap<String, Unit>, moved_piece: Unit) -> HashMap<String, Unit> {
+fn do_opposing_move(
+    active_pieces: HashMap<String, Unit>,
+    moved_piece: Unit,
+) -> HashMap<String, Unit> {
     let opposing_colour = match moved_piece.colour {
         Colour::Black => Colour::White,
-        Colour::White => Colour::Black
+        Colour::White => Colour::Black,
     };
 
     console::log_1(&"Moving opposing unit".into());
@@ -134,10 +142,20 @@ fn do_opposing_move(active_pieces: HashMap<String, Unit>, moved_piece: Unit) -> 
 
     let (moving_piece, move_to_take) = find_next_move(&active_pieces, opposing_pieces);
 
-    return perform_move_and_get_active_pieces(active_pieces, moving_piece, move_to_take.x, move_to_take.y);
+    return perform_move_and_get_active_pieces(
+        active_pieces,
+        moving_piece,
+        move_to_take.x,
+        move_to_take.y,
+    );
 }
 
-fn perform_move_and_get_active_pieces(active_pieces: HashMap<String, Unit>, unit: Unit, to_x: i8, to_y: i8) -> HashMap<String, Unit> {
+fn perform_move_and_get_active_pieces(
+    active_pieces: HashMap<String, Unit>,
+    unit: Unit,
+    to_x: i8,
+    to_y: i8,
+) -> HashMap<String, Unit> {
     let mut modified_active_pieces = active_pieces;
 
     let unit_to_move = modified_active_pieces.remove(&get_key_for_unit(&unit));
@@ -161,7 +179,7 @@ pub fn do_move(board: InternalBoard, unit: Unit, to_x: i8, to_y: i8) -> Internal
 
     InternalBoard {
         active_pieces: do_opposing_move(active_pieces, unit),
-        human_player: board.human_player
+        human_player: board.human_player,
     }
 }
 
@@ -175,10 +193,7 @@ mod tests {
             active: true,
             colour: Colour::White,
             unit_type: UnitType::Pawn,
-            coordinate: Coordinate {
-                x,
-                y
-            }
+            coordinate: Coordinate { x, y },
         }
     }
 
@@ -187,10 +202,7 @@ mod tests {
             active: true,
             colour: Colour::Black,
             unit_type: UnitType::Pawn,
-            coordinate: Coordinate {
-                x,
-                y
-            }
+            coordinate: Coordinate { x, y },
         }
     }
 
