@@ -8,7 +8,7 @@ module.exports = {
   },
   mode: "development",
   experiments: {
-      asyncWebAssembly: true
+      syncWebAssembly: true
   },
   resolve: {
     // Add `.ts` and `.tsx` as a resolvable extension.

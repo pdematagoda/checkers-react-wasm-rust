@@ -19,3 +19,5 @@ const CheckersBoard = () => {
 export {
     CheckersBoard
 };
+
+export default CheckersBoard;

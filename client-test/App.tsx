@@ -1,21 +1,12 @@
-import { useEffect, useState } from "react";
-import { CheckersBoard } from "./CheckersBoard";
+import { lazy, Suspense } from "react";
 
 const App = () => {
-    const [isLoading, setIsLoading] = useState(true);
-    const [logicPromise] = useState(import("wasm-ai-thingo"));
 
-    useEffect(() => {
-        logicPromise.then(() => {
-            setIsLoading(false);
-        });
-    });
+    const CheckersBoard = lazy(() => import('./CheckersBoard'));
 
-    if (isLoading) {
-        return <div>Loading stuff</div>;
-    }
-
-    return <CheckersBoard />;
+    return <Suspense fallback={<div>Loading stuff</div>}>
+        <CheckersBoard />
+    </Suspense>;
 };
 
 export default App;
