@@ -13,6 +13,10 @@ pub fn can_do_move(unit: &Unit, to_x: i8, to_y: i8) -> bool {
         return false;
     }
 
+    if (to_x > BoardWidth || to_y > BoardLength) {
+        return false;
+    }
+
     let mut x_change = (to_x) - (unit.coordinate.x);
     let mut y_change = (to_y) - (unit.coordinate.y);
 
@@ -34,7 +38,12 @@ fn validate_move(active_pieces: &HashMap<String, Unit>, piece: &Unit, to_x: i8, 
     let active_piece_at_key = active_pieces.get(&piece_moving_to_key);
 
     if let Some(active_piece_at_key) = active_piece_at_key {
-        return !(active_piece_at_key.colour == piece.colour);
+        if !(active_piece_at_key.colour == piece.colour) {
+            let can_take_opposing_piece = false;
+
+            return true;
+        }
+        return false;
     }
 
     true
@@ -47,37 +56,25 @@ fn get_valid_moves(active_pieces: &HashMap<String, Unit>, piece: &Unit) -> Vec<C
     let y_change = if can_move_forward { 1 } else { -1 };
 
     if can_move_forward {
-        if (piece.coordinate.y < BoardLength) {
-            if (piece.coordinate.x < BoardWidth) {
-                possible_moves.push(Coordinate {
-                    x: piece.coordinate.x + 1,
-                    y: piece.coordinate.y + y_change,
-                })
-            }
+        possible_moves.push(Coordinate {
+            x: piece.coordinate.x + 1,
+            y: piece.coordinate.y + y_change,
+        });
 
-            if (piece.coordinate.x > 1) {
-                possible_moves.push(Coordinate {
-                    x: piece.coordinate.x - 1,
-                    y: piece.coordinate.y + y_change,
-                })
-            }
-        }
+        possible_moves.push(Coordinate {
+            x: piece.coordinate.x - 1,
+            y: piece.coordinate.y + y_change,
+        });
     } else {
-        if (piece.coordinate.y > 1) {
-            if (piece.coordinate.x < BoardWidth) {
-                possible_moves.push(Coordinate {
-                    x: piece.coordinate.x + 1,
-                    y: piece.coordinate.y + y_change,
-                })
-            }
+        possible_moves.push(Coordinate {
+            x: piece.coordinate.x + 1,
+            y: piece.coordinate.y + y_change,
+        });
 
-            if (piece.coordinate.x > 1) {
-                possible_moves.push(Coordinate {
-                    x: piece.coordinate.x - 1,
-                    y: piece.coordinate.y + y_change,
-                })
-            }
-        }
+        possible_moves.push(Coordinate {
+            x: piece.coordinate.x - 1,
+            y: piece.coordinate.y + y_change,
+        });
     }
 
     let mut valid_moves = Vec::new();
@@ -207,6 +204,11 @@ mod tests {
     }
 
     #[test]
+    fn white_cannot_move_backwards_out_of_the_board() {
+        assert_eq!(can_do_move(&get_white_unit_with_coords(1, 1), 0, 0), false);
+    }
+
+    #[test]
     fn white_can_move_forward() {
         assert_eq!(can_do_move(&get_white_unit_with_coords(1, 1), 2, 2), true);
     }
@@ -229,5 +231,10 @@ mod tests {
     #[test]
     fn black_can_move_forward() {
         assert_eq!(can_do_move(&get_black_unit_with_coords(6, 2), 5, 1), true);
+    }
+
+    #[test]
+    fn black_cannot_move_forward_outside_the_board() {
+        assert_eq!(can_do_move(&get_black_unit_with_coords(8, 8), 9, 9), false);
     }
 }
