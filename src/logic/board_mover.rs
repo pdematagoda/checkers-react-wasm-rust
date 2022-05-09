@@ -3,6 +3,7 @@ use crate::logic::models::BoardWidth;
 use std::collections::HashMap;
 use crate::logic::models::{ Board, InternalBoard, Unit, Colour, get_key_for_unit, get_key_for_x_and_y, Coordinate };
 
+use js_sys::Math::random;
 use web_sys::console;
 
 pub fn can_do_move(unit: &Unit, to_x: i8, to_y: i8) -> bool {
@@ -98,12 +99,14 @@ fn do_opposing_move(active_pieces: HashMap<String, Unit>, moved_piece: Unit) -> 
         Colour::White => Colour::Black
     };
 
+    console::log_1(&"Moving opposing unit".into());
+
     let opposing_pieces = get_active_pieces_for_side(&active_pieces, opposing_colour);
-    let piece_to_move = opposing_pieces[0];
+    let piece_to_move = opposing_pieces[(random() * 100.0) as usize % opposing_pieces.len()];
 
     let possible_moves = get_valid_moves(&active_pieces, &piece_to_move);
 
-    let selected_move = possible_moves[0];
+    let selected_move = possible_moves[(random() * 100.0) as usize % possible_moves.len()];
 
     perform_move_and_get_active_pieces(active_pieces, piece_to_move, selected_move.x, selected_move.y)
 }

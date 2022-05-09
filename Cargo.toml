@@ -16,3 +16,6 @@ version = "0.3.57"
 features = [
     'console'
 ]
+
+[dependencies.js-sys]
+version = "0.3.57"
