@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 use wasm_bindgen::prelude::*;
 
-pub const BoardLength: i8 = 8;
-pub const BoardWidth: i8 = 8;
+pub const BOARD_LENGTH: i8 = 8;
+pub const BOARD_WIDTH: i8 = 8;
 
 #[wasm_bindgen]
 #[derive(Copy, Clone, PartialEq, Eq)]
