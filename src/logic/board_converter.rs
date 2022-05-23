@@ -6,7 +6,7 @@ use std::collections::HashMap;
 use web_sys::console;
 
 fn add_unit_to_active_pieces(unit: Unit, pieces: &mut HashMap<String, Unit>) {
-    if (unit.active) {
+    if unit.active {
         pieces.insert(get_key_for_unit(&unit), unit);
     }
 }
@@ -46,7 +46,7 @@ fn get_unit(side_pieces: &Vec<Unit>, index: usize, side: Colour) -> Unit {
         unit_type: UnitType::Pawn,
     };
 
-    if (index >= side_pieces.len()) {
+    if index >= side_pieces.len() {
         console::log_1(&"Returning empty piece".into());
 
         return empty_piece;
@@ -60,8 +60,8 @@ fn get_unit(side_pieces: &Vec<Unit>, index: usize, side: Colour) -> Unit {
 fn get_side_for_active_pieces(active_pieces: &HashMap<String, Unit>, side: Colour) -> Side {
     let mut side_pieces: Vec<Unit> = Vec::new();
 
-    for (key, unit) in active_pieces {
-        if (unit.colour == side && unit.active) {
+    for (_key, unit) in active_pieces {
+        if unit.colour == side && unit.active {
             console::log_1(&"Pushing active unit".into());
 
             side_pieces.push(*unit);

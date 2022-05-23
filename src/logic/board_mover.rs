@@ -1,7 +1,7 @@
 use crate::logic::models::BoardLength;
 use crate::logic::models::BoardWidth;
 use crate::logic::models::{
-    get_key_for_unit, get_key_for_x_and_y, Board, Colour, Coordinate, InternalBoard, Unit,
+    get_key_for_unit, get_key_for_x_and_y, Colour, Coordinate, InternalBoard, Unit,
 };
 use std::collections::HashMap;
 
@@ -9,11 +9,11 @@ use js_sys::Math::random;
 use web_sys::console;
 
 pub fn can_do_move(unit: &Unit, to_x: i8, to_y: i8) -> bool {
-    if (to_x < 1 || to_y < 1) {
+    if to_x < 1 || to_y < 1 {
         return false;
     }
 
-    if (to_x > BoardWidth || to_y > BoardLength) {
+    if to_x > BoardWidth || to_y > BoardLength {
         return false;
     }
 
@@ -65,7 +65,7 @@ fn get_piece_being_jumped<'a>(
 }
 
 fn validate_move(active_pieces: &HashMap<String, Unit>, piece: &Unit, to_x: i8, to_y: i8) -> bool {
-    if (!can_do_move(&piece, to_x, to_y)) {
+    if !can_do_move(&piece, to_x, to_y) {
         return false;
     }
 
@@ -148,7 +148,7 @@ fn get_valid_moves(active_pieces: &HashMap<String, Unit>, piece: &Unit) -> Vec<C
     let mut valid_moves = Vec::new();
 
     for possible_move in possible_moves.iter() {
-        if (validate_move(active_pieces, piece, possible_move.x, possible_move.y)) {
+        if validate_move(active_pieces, piece, possible_move.x, possible_move.y) {
             valid_moves.push(*possible_move);
         }
     }
@@ -160,7 +160,7 @@ fn get_active_pieces_for_side(active_pieces: &HashMap<String, Unit>, side: Colou
     let mut pieces = Vec::new();
 
     for (_, piece) in active_pieces {
-        if (piece.colour == side) {
+        if piece.colour == side {
             pieces.push(*piece);
         }
     }
@@ -199,7 +199,7 @@ fn find_next_move(
 
     let possible_moves = get_valid_moves(&active_pieces, &piece_to_move);
 
-    if (possible_moves.len() == 0) {
+    if possible_moves.len() == 0 {
         console::log_1(&"Need to try again.....".into());
 
         let mut new_pieces_to_move = pieces_to_move.clone();
