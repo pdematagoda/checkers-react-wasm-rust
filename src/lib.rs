@@ -1,12 +1,19 @@
 use crate::logic::board_converter::from_internal_board;
 use crate::logic::board_converter::to_internal_board;
 use wasm_bindgen::prelude::*;
+extern crate console_error_panic_hook;
+use std::panic;
 
 mod logic;
 
 use self::logic::board_generator::generate_board;
 use self::logic::board_mover::do_move;
 use self::logic::models::{Board, Colour, Coordinate, Side, Unit, UnitType};
+
+#[wasm_bindgen]
+pub fn initialiseEngine() {
+    panic::set_hook(Box::new(console_error_panic_hook::hook));
+}
 
 #[wasm_bindgen]
 pub fn generateBoard() -> Board {

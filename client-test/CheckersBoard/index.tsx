@@ -1,6 +1,8 @@
 import { useState } from "react";
-import { Coordinate, doMove, generateBoard, Unit } from "wasm-ai-thingo";
+import { Coordinate, doMove, generateBoard, Unit, initialiseEngine } from "wasm-ai-thingo";
 import Grid from "./Grid";
+
+initialiseEngine();
 
 const CheckersBoard = () => {
     const [board, setBoard] = useState(generateBoard());
