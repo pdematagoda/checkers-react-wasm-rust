@@ -4,6 +4,7 @@ use std::collections::HashMap;
 
 pub enum OpponentType {
     TheSimpleton,
+    TheAggressiveSimpleton,
 }
 
 pub struct OpponentMove {

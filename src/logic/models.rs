@@ -5,28 +5,28 @@ pub const BOARD_LENGTH: i8 = 8;
 pub const BOARD_WIDTH: i8 = 8;
 
 #[wasm_bindgen]
-#[derive(Copy, Clone, PartialEq, Eq)]
+#[derive(Copy, Clone, PartialEq, Eq, Hash)]
 pub enum Colour {
     Black,
     White,
 }
 
 #[wasm_bindgen]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, PartialEq, Eq, Hash)]
 pub enum UnitType {
     Pawn,
     King,
 }
 
 #[wasm_bindgen]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, PartialEq, Eq, Hash)]
 pub struct Coordinate {
     pub x: i8,
     pub y: i8,
 }
 
 #[wasm_bindgen]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, PartialEq, Eq, Hash)]
 pub struct Unit {
     pub colour: Colour,
     pub unit_type: UnitType,

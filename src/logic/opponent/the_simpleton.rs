@@ -1,5 +1,5 @@
-use crate::logic::opponent::shared::{get_active_pieces_for_side, get_pieces_with_possible_moves};
 use crate::logic::movement::move_generation::get_valid_moves;
+use crate::logic::opponent::shared::{get_active_pieces_for_side, get_pieces_with_possible_moves};
 use crate::logic::opponent::types::{Opponent, OpponentMove};
 use js_sys::Math::random;
 use web_sys::console;

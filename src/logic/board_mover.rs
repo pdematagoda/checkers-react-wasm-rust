@@ -2,14 +2,14 @@ use crate::logic::models::{InternalBoard, Unit};
 use crate::logic::movement::make_move::perform_move_and_get_active_pieces;
 use crate::logic::movement::move_validation::validate_move;
 use crate::logic::opponent::factory::get_opponent;
-use crate::logic::opponent::types::{Opponent, OpponentType};
+use crate::logic::opponent::types::OpponentType;
 use std::collections::HashMap;
 
 fn do_opposing_move(
     active_pieces: HashMap<String, Unit>,
     moved_piece: Unit,
 ) -> HashMap<String, Unit> {
-    let opponent = get_opponent(OpponentType::TheSimpleton);
+    let opponent = get_opponent(OpponentType::TheAggressiveSimpleton);
 
     let opponent_move = opponent.get_opposing_move(&active_pieces, &moved_piece);
 

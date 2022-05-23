@@ -1,8 +1,11 @@
-use crate::logic::opponent::the_simpleton::TheSimpleton;
 use crate::logic::opponent::types::{Opponent, OpponentType};
 
-pub fn get_opponent(opponent_type: OpponentType) -> impl Opponent {
+use crate::logic::opponent::the_aggressive_simpleton::TheAggressiveSimpleton;
+use crate::logic::opponent::the_simpleton::TheSimpleton;
+
+pub fn get_opponent(opponent_type: OpponentType) -> Box<dyn Opponent> {
     match opponent_type {
-        OpponentType::TheSimpleton => TheSimpleton {},
+        OpponentType::TheSimpleton => Box::new(TheSimpleton {}),
+        OpponentType::TheAggressiveSimpleton => Box::new(TheAggressiveSimpleton {}),
     }
 }
