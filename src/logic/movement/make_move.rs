@@ -5,12 +5,12 @@ use web_sys::console;
 use crate::logic::models::get_key_for_unit;
 use crate::Unit;
 
-pub fn perform_move_and_get_active_pieces(
+pub fn perform_move_and_get_active_pieces_with_moved_piece(
     active_pieces: HashMap<String, Unit>,
     unit: Unit,
     to_x: i8,
     to_y: i8,
-) -> HashMap<String, Unit> {
+) -> (HashMap<String, Unit>, Unit) {
     let mut modified_active_pieces = active_pieces;
 
     let unit_to_move = modified_active_pieces.remove(&get_key_for_unit(&unit));
@@ -30,7 +30,9 @@ pub fn perform_move_and_get_active_pieces(
         unit_to_move.coordinate.y = to_y;
 
         modified_active_pieces.insert(get_key_for_unit(&unit_to_move), unit_to_move);
+    } else {
+        panic!("OHNOESSS : The unit provided wasn't an active unit!!!");
     }
 
-    modified_active_pieces
+    (modified_active_pieces, unit_to_move.unwrap())
 }

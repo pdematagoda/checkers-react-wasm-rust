@@ -65,6 +65,12 @@ pub struct InternalBoard {
     pub human_player: Colour,
 }
 
+#[wasm_bindgen]
+pub struct PossibleMoves {
+    pub first: Option<Coordinate>,
+    pub second: Option<Coordinate>,
+}
+
 pub fn get_key_for_x_and_y(x: i8, y: i8) -> String {
     let key = format!("{}{}", x, y);
 

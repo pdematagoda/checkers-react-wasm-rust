@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Board, Coordinate, Side, Unit, isValidBoardMove } from "wasm-ai-thingo"
+import { Board, Coordinate, Side, Unit, isValidBoardMove, getValidMovesForPiece, PossibleMoves } from "wasm-ai-thingo"
 import EmptyCell from "./EmptyCell";
 import OccupiedCell from "./OccupiedCell";
 
@@ -44,6 +44,30 @@ const convertBoardToUnitDictionary = (board: Board): Map<string, Unit> => {
     return result;
 };
 
+const isPossibleCoordinate = (possibleCoordinate: Coordinate | null, x: number, y: number) => {
+    if (possibleCoordinate === null) {
+        return false;
+    }
+
+    return possibleCoordinate.x === x && possibleCoordinate.y === y;
+}
+
+const isPossibleMove = (possibleMoves: PossibleMoves | null, x: number, y: number) => {
+    if (possibleMoves === null) {
+        return false;
+    }
+
+    if (possibleMoves.first && isPossibleCoordinate(possibleMoves.first, x, y)) {
+        return true;
+    }
+
+    if (possibleMoves.second && isPossibleCoordinate(possibleMoves.second, x, y)) {
+        return true;
+    }
+
+    return false;
+};
+
 const Grid = ({ board, onMove }: GridProps) => {
     const unitDictionary = convertBoardToUnitDictionary(board);
     const [currentSelection, setCurrentSelection] = useState<Unit | null>(null);
@@ -66,6 +90,8 @@ const Grid = ({ board, onMove }: GridProps) => {
         }
     };
 
+    const currentSelectionMoves = currentSelection ? getValidMovesForPiece(board, currentSelection) : null;
+
     return (<div>
         {[1,2,3,4,5,6,7,8].map((y) => {
             return (<div key={y}>
@@ -87,8 +113,10 @@ const Grid = ({ board, onMove }: GridProps) => {
                                     />
                             );
                         }
-            
-                        return <EmptyCell key={key} onClick={() => onEmptyCellSelection(x, y)} />;
+
+                        let emptyBackground = isPossibleMove(currentSelectionMoves, x, y) ? 'lightblue' : 'white';
+
+                        return <EmptyCell background={emptyBackground} key={key} onClick={() => onEmptyCellSelection(x, y)} />;
                     };
 
                     const cellContent = getCellContent();

@@ -102,6 +102,11 @@ mod tests {
     }
 
     #[test]
+    fn white_can_jump_forward_left() {
+        assert_eq!(can_do_move(&get_white_unit_with_coords(6, 4), 4, 6), true);
+    }
+
+    #[test]
     fn white_cannot_move_forward_straight() {
         assert_eq!(can_do_move(&get_white_unit_with_coords(1, 1), 1, 2), false);
     }
