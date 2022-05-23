@@ -1,8 +1,6 @@
-cd pkg
-npm link
+sh link.sh
 
-cd ../client-test
-npm link wasm-ai-thingo
+cd client-test
 
 npm install
 npm run serve
