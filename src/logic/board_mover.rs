@@ -17,15 +17,10 @@ pub fn can_do_move(unit: &Unit, to_x: i8, to_y: i8) -> bool {
         return false;
     }
 
-    let mut x_change = (to_x) - (unit.coordinate.x);
-    let mut y_change = (to_y) - (unit.coordinate.y);
+    let x_change = (to_x - unit.coordinate.x).abs();
+    let y_change = (to_y - unit.coordinate.y).abs();
 
-    if (unit.colour == Colour::Black) {
-        x_change = -x_change;
-        y_change = -y_change;
-    }
-
-    return x_change == 1 && y_change == 1;
+    return (x_change == 1 && y_change == 1) || (x_change == 2 && y_change == 2);
 }
 
 fn get_active_piece_at_x_and_y(
@@ -160,6 +155,28 @@ fn get_active_pieces_for_side(active_pieces: &HashMap<String, Unit>, side: Colou
     pieces
 }
 
+fn get_pieces_with_possible_moves(
+    active_pieces: &HashMap<String, Unit>,
+    pieces_to_move: Vec<Unit>,
+) -> Vec<Unit> {
+    let mut pieces_that_can_move = pieces_to_move.clone();
+
+    console::log_1(&format!("Starting with {} pieces", pieces_to_move.len()).into());
+
+    pieces_that_can_move
+        .retain(|&piece_to_check| get_valid_moves(&active_pieces, &piece_to_check).len() > 0);
+
+    console::log_1(
+        &format!(
+            "Have {} pieces that can actually move",
+            pieces_that_can_move.len()
+        )
+        .into(),
+    );
+
+    pieces_that_can_move
+}
+
 fn find_next_move(
     active_pieces: &HashMap<String, Unit>,
     pieces_to_move: Vec<Unit>,
@@ -197,7 +214,10 @@ fn do_opposing_move(
 
     let opposing_pieces = get_active_pieces_for_side(&active_pieces, opposing_colour);
 
-    let (moving_piece, move_to_take) = find_next_move(&active_pieces, opposing_pieces);
+    let (moving_piece, move_to_take) = find_next_move(
+        &active_pieces,
+        get_pieces_with_possible_moves(&active_pieces, opposing_pieces),
+    );
 
     return perform_move_and_get_active_pieces(
         active_pieces,
@@ -303,6 +323,11 @@ mod tests {
     #[test]
     fn black_can_move_forward() {
         assert_eq!(can_do_move(&get_black_unit_with_coords(6, 2), 5, 1), true);
+    }
+
+    #[test]
+    fn black_can_jump_forward_right() {
+        assert_eq!(can_do_move(&get_black_unit_with_coords(6, 6), 4, 8), true);
     }
 
     #[test]
