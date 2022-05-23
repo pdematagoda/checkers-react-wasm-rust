@@ -47,6 +47,14 @@ fn get_piece_being_jumped<'a>(
         let jumping_over_x = piece.coordinate.x + ((to_x - piece.coordinate.x) / 2);
         let jumping_over_y = piece.coordinate.y + ((to_y - piece.coordinate.y) / 2);
 
+        console::log_1(
+            &format!(
+                "For piece at {}x and {}y, the jumped unit is at {}x and {}y",
+                piece.coordinate.x, piece.coordinate.y, to_x, to_y
+            )
+            .into(),
+        );
+
         let active_piece_being_jumped =
             get_active_piece_at_x_and_y(active_pieces, jumping_over_x, jumping_over_y);
 
@@ -94,10 +102,15 @@ fn get_jumping_coordinate_if_required(
     if let Some(_active_piece_at_move) =
         get_active_piece_at_x_and_y(active_pieces, possible_move.x, possible_move.y)
     {
-        let y = get_y_change_for_colour(piece.colour) * 2;
-        let x = (possible_move.x - piece.coordinate.x) * 2;
+        let y_change = get_y_change_for_colour(piece.colour) * 2;
+        let x_change = (piece.coordinate.x - possible_move.x) * 2;
 
-        return Coordinate { x, y };
+        console::log_1(&format!("Trying a jump!").into());
+
+        return Coordinate {
+            x: piece.coordinate.x + x_change,
+            y: piece.coordinate.y + y_change,
+        };
     }
 
     possible_move
