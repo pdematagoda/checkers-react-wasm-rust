@@ -33,7 +33,7 @@ fn get_jumping_coordinate_if_required(
         get_active_piece_at_x_and_y(active_pieces, possible_move.x, possible_move.y)
     {
         let y_change = get_y_change_for_colour(piece.colour) * 2;
-        let x_change = (piece.coordinate.x - possible_move.x) * 2;
+        let x_change = (possible_move.x - piece.coordinate.x) * 2;
 
         console::log_1(&format!("Trying a jump!").into());
 
