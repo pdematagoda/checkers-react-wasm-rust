@@ -39,6 +39,15 @@ fn find_next_move(
         }
     }
 
+    console::log_1(
+        &format!(
+            "We have {} jumps and {} singles",
+            jump_move_list.len(),
+            single_move_list.len()
+        )
+        .into(),
+    );
+
     let moves_to_try = match jump_move_list.len() > 0 {
         true => jump_move_list,
         false => single_move_list,
