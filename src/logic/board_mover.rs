@@ -17,8 +17,20 @@ pub fn can_do_move(unit: &Unit, to_x: i8, to_y: i8) -> bool {
         return false;
     }
 
-    let x_change = (to_x - unit.coordinate.x).abs();
-    let y_change = (to_y - unit.coordinate.y).abs();
+    let x_change = to_x - unit.coordinate.x;
+    let y_change = to_y - unit.coordinate.y;
+
+    let is_valid_colour_move = match unit.colour {
+        Colour::Black => y_change < 0,
+        Colour::White => y_change > 0,
+    };
+
+    if !is_valid_colour_move {
+        return false;
+    }
+
+    let x_change = x_change.abs();
+    let y_change = y_change.abs();
 
     return (x_change == 1 && y_change == 1) || (x_change == 2 && y_change == 2);
 }
@@ -69,19 +81,24 @@ fn validate_move(active_pieces: &HashMap<String, Unit>, piece: &Unit, to_x: i8, 
         return false;
     }
 
-    let active_piece_being_jumped = get_piece_being_jumped(active_pieces, piece, to_x, to_y);
-
-    if let Some(active_piece_being_jumped) = active_piece_being_jumped {
-        if !(active_piece_being_jumped.colour == piece.colour) {
-            return true;
-        }
-        return false;
-    }
-
     let active_piece_at_key = get_active_piece_at_x_and_y(active_pieces, to_x, to_y);
 
     if let Some(_active_piece_at_key) = active_piece_at_key {
         return false;
+    }
+
+    if let Some(active_piece_being_jumped) =
+        get_piece_being_jumped(active_pieces, piece, to_x, to_y)
+    {
+        if active_piece_being_jumped.colour == piece.colour {
+            return false;
+        }
+    } else {
+        let is_jump = (piece.coordinate.y - to_y).abs() == 2;
+
+        if is_jump {
+            return false;
+        }
     }
 
     true
@@ -279,6 +296,10 @@ pub fn do_move(board: InternalBoard, unit: Unit, to_x: i8, to_y: i8) -> Internal
     }
 }
 
+pub fn is_valid_board_move(board: &InternalBoard, unit: &Unit, to_x: i8, to_y: i8) -> bool {
+    validate_move(&board.active_pieces, unit, to_x, to_y)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -329,6 +350,11 @@ mod tests {
     }
 
     #[test]
+    fn white_pawn_cannot_move_backward() {
+        assert_eq!(can_do_move(&get_white_unit_with_coords(4, 4), 3, 3), false);
+    }
+
+    #[test]
     fn white_cannot_move_backwards_from_a_corner() {
         assert_eq!(can_do_move(&get_white_unit_with_coords(1, 1), 0, 1), false);
     }
@@ -339,8 +365,13 @@ mod tests {
     }
 
     #[test]
+    fn black_pawn_cannot_move_backward() {
+        assert_eq!(can_do_move(&get_black_unit_with_coords(6, 2), 5, 3), false);
+    }
+
+    #[test]
     fn black_can_jump_forward_right() {
-        assert_eq!(can_do_move(&get_black_unit_with_coords(6, 6), 4, 8), true);
+        assert_eq!(can_do_move(&get_black_unit_with_coords(6, 6), 8, 4), true);
     }
 
     #[test]

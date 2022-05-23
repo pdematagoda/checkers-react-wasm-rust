@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Board, Coordinate, Side, Unit } from "wasm-ai-thingo"
+import { Board, Coordinate, Side, Unit, isValidBoardMove } from "wasm-ai-thingo"
 import EmptyCell from "./EmptyCell";
 import OccupiedCell from "./OccupiedCell";
 
@@ -49,20 +49,20 @@ const Grid = ({ board, onMove }: GridProps) => {
     const [currentSelection, setCurrentSelection] = useState<Unit | null>(null);
 
     const onOccupiedCellSelection = (unit: Unit) => {
-        if (currentSelection) {
-            setCurrentSelection(null);
-            onMove(currentSelection, unit.coordinate.x, unit.coordinate.y);
-        } else {
-            setCurrentSelection(unit);
-        }
+        setCurrentSelection(unit);
     };
 
     const onEmptyCellSelection = (x: number, y: number) => {
-        console.info(`selected ${x}x and ${y}y`);
 
         if (currentSelection) {
-            setCurrentSelection(null);
-            onMove(currentSelection, x, y);
+            const isValidMove = isValidBoardMove(board, currentSelection, x, y);
+
+            if (isValidMove) {
+                setCurrentSelection(null);
+                onMove(currentSelection, x, y);
+            } else {
+                alert('Invalid move!');
+            }
         }
     };
 
