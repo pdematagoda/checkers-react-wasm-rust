@@ -28,54 +28,114 @@ pub fn can_do_move(unit: &Unit, to_x: i8, to_y: i8) -> bool {
     return x_change == 1 && y_change == 1;
 }
 
+fn get_active_piece_at_x_and_y(
+    active_pieces: &HashMap<String, Unit>,
+    to_x: i8,
+    to_y: i8,
+) -> Option<&Unit> {
+    let piece_moving_to_key = get_key_for_x_and_y(to_x, to_y);
+
+    let active_piece_at_key = active_pieces.get(&piece_moving_to_key);
+
+    active_piece_at_key
+}
+
+fn get_piece_being_jumped<'a>(
+    active_pieces: &'a HashMap<String, Unit>,
+    piece: &Unit,
+    to_x: i8,
+    to_y: i8,
+) -> Option<&'a Unit> {
+    let is_jump = (piece.coordinate.y - to_y).abs() == 2;
+
+    if is_jump {
+        let jumping_over_x = piece.coordinate.x + ((to_x - piece.coordinate.x) / 2);
+        let jumping_over_y = piece.coordinate.y + ((to_y - piece.coordinate.y) / 2);
+
+        let active_piece_being_jumped =
+            get_active_piece_at_x_and_y(active_pieces, jumping_over_x, jumping_over_y);
+
+        return active_piece_being_jumped;
+    }
+
+    None
+}
+
 fn validate_move(active_pieces: &HashMap<String, Unit>, piece: &Unit, to_x: i8, to_y: i8) -> bool {
     if (!can_do_move(&piece, to_x, to_y)) {
         return false;
     }
 
-    let piece_moving_to_key = get_key_for_x_and_y(to_x, to_y);
+    let active_piece_being_jumped = get_piece_being_jumped(active_pieces, piece, to_x, to_y);
 
-    let active_piece_at_key = active_pieces.get(&piece_moving_to_key);
-
-    if let Some(active_piece_at_key) = active_piece_at_key {
-        if !(active_piece_at_key.colour == piece.colour) {
-            let can_take_opposing_piece = false;
-
+    if let Some(active_piece_being_jumped) = active_piece_being_jumped {
+        if !(active_piece_being_jumped.colour == piece.colour) {
             return true;
         }
+        return false;
+    }
+
+    let active_piece_at_key = get_active_piece_at_x_and_y(active_pieces, to_x, to_y);
+
+    if let Some(_active_piece_at_key) = active_piece_at_key {
         return false;
     }
 
     true
 }
 
-fn get_valid_moves(active_pieces: &HashMap<String, Unit>, piece: &Unit) -> Vec<Coordinate> {
-    let mut possible_moves = Vec::new();
-
-    let can_move_forward = piece.colour == Colour::White;
+fn get_y_change_for_colour(colour: Colour) -> i8 {
+    let can_move_forward = colour == Colour::White;
     let y_change = if can_move_forward { 1 } else { -1 };
 
-    if can_move_forward {
-        possible_moves.push(Coordinate {
-            x: piece.coordinate.x + 1,
-            y: piece.coordinate.y + y_change,
-        });
+    y_change
+}
 
-        possible_moves.push(Coordinate {
-            x: piece.coordinate.x - 1,
-            y: piece.coordinate.y + y_change,
-        });
-    } else {
-        possible_moves.push(Coordinate {
-            x: piece.coordinate.x + 1,
-            y: piece.coordinate.y + y_change,
-        });
+fn get_jumping_coordinate_if_required(
+    active_pieces: &HashMap<String, Unit>,
+    piece: &Unit,
+    possible_move: Coordinate,
+) -> Coordinate {
+    if let Some(_active_piece_at_move) =
+        get_active_piece_at_x_and_y(active_pieces, possible_move.x, possible_move.y)
+    {
+        let y = get_y_change_for_colour(piece.colour) * 2;
+        let x = (possible_move.x - piece.coordinate.x) * 2;
 
-        possible_moves.push(Coordinate {
-            x: piece.coordinate.x - 1,
-            y: piece.coordinate.y + y_change,
-        });
+        return Coordinate { x, y };
     }
+
+    possible_move
+}
+
+fn get_potential_moves(active_pieces: &HashMap<String, Unit>, piece: &Unit) -> Vec<Coordinate> {
+    let mut possible_moves = Vec::new();
+
+    let y_change = get_y_change_for_colour(piece.colour);
+
+    possible_moves.push(get_jumping_coordinate_if_required(
+        active_pieces,
+        piece,
+        Coordinate {
+            x: piece.coordinate.x + 1,
+            y: piece.coordinate.y + y_change,
+        },
+    ));
+
+    possible_moves.push(get_jumping_coordinate_if_required(
+        active_pieces,
+        piece,
+        Coordinate {
+            x: piece.coordinate.x - 1,
+            y: piece.coordinate.y + y_change,
+        },
+    ));
+
+    possible_moves
+}
+
+fn get_valid_moves(active_pieces: &HashMap<String, Unit>, piece: &Unit) -> Vec<Coordinate> {
+    let possible_moves = get_potential_moves(active_pieces, piece);
 
     let mut valid_moves = Vec::new();
 
@@ -160,7 +220,13 @@ fn perform_move_and_get_active_pieces(
     if let Some(mut unit_to_move) = unit_to_move {
         console::log_1(&"Moving unit".into());
 
-        let unit_at_to = modified_active_pieces.remove(&get_key_for_x_and_y(to_x, to_y));
+        if let Some(active_piece_being_jumped) =
+            get_piece_being_jumped(&(modified_active_pieces.clone()), &unit, to_x, to_y)
+        {
+            console::log_1(&"Piece is being taken!".into());
+
+            modified_active_pieces.remove(&get_key_for_unit(active_piece_being_jumped));
+        }
 
         unit_to_move.coordinate.x = to_x;
         unit_to_move.coordinate.y = to_y;
@@ -184,6 +250,12 @@ pub fn do_move(board: InternalBoard, unit: Unit, to_x: i8, to_y: i8) -> Internal
 mod tests {
     use super::*;
     use crate::logic::models::*;
+
+    #[test]
+    fn get_potential_moves_for_a_middle_white_piece_with_no_other_pieces_nearby() {}
+
+    #[test]
+    fn get_potential_moves_for_a_middle_black_piece_with_no_other_pieces_nearby() {}
 
     fn get_white_unit_with_coords(x: i8, y: i8) -> Unit {
         Unit {
