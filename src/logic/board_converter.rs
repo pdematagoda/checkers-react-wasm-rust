@@ -1,5 +1,5 @@
 use crate::logic::models::{
-    get_key_for_unit, Board, Colour, Coordinate, InternalBoard, Side, Unit, UnitType,
+    get_key_for_unit, Board, Colour, Coordinate, InternalBoard, Side, Unit, UnitType, WinningSide,
 };
 use std::collections::HashMap;
 
@@ -57,7 +57,7 @@ fn get_unit(side_pieces: &Vec<Unit>, index: usize, side: Colour) -> Unit {
     side_pieces[index]
 }
 
-fn get_side_for_active_pieces(active_pieces: &HashMap<String, Unit>, side: Colour) -> Side {
+fn get_active_pieces_for_side(active_pieces: &HashMap<String, Unit>, side: Colour) -> Vec<Unit> {
     let mut side_pieces: Vec<Unit> = Vec::new();
 
     for (_key, unit) in active_pieces {
@@ -67,6 +67,12 @@ fn get_side_for_active_pieces(active_pieces: &HashMap<String, Unit>, side: Colou
             side_pieces.push(*unit);
         }
     }
+
+    side_pieces
+}
+
+fn get_side_for_active_pieces(active_pieces: &HashMap<String, Unit>, side: Colour) -> Side {
+    let side_pieces = get_active_pieces_for_side(active_pieces, side);
 
     Side {
         one: get_unit(&side_pieces, 0, side),
@@ -84,10 +90,28 @@ fn get_side_for_active_pieces(active_pieces: &HashMap<String, Unit>, side: Colou
     }
 }
 
+fn get_winning_side_for_active_pieces(active_pieces: &HashMap<String, Unit>) -> WinningSide {
+    let have_active_black_pieces =
+        get_active_pieces_for_side(active_pieces, Colour::Black).len() == 0;
+    let have_active_white_pieces =
+        get_active_pieces_for_side(active_pieces, Colour::White).len() == 0;
+
+    if have_active_black_pieces && !have_active_white_pieces {
+        return WinningSide::Black;
+    }
+
+    if have_active_white_pieces && !have_active_black_pieces {
+        return WinningSide::White;
+    }
+
+    WinningSide::None
+}
+
 pub fn from_internal_board(internal_board: InternalBoard) -> Board {
     Board {
         human_player: internal_board.human_player,
         black_pieces: get_side_for_active_pieces(&internal_board.active_pieces, Colour::Black),
         white_pieces: get_side_for_active_pieces(&internal_board.active_pieces, Colour::White),
+        winning_side: get_winning_side_for_active_pieces(&internal_board.active_pieces),
     }
 }

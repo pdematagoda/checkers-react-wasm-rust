@@ -1,4 +1,4 @@
-use crate::logic::models::{Board, Colour, Coordinate, Side, Unit, UnitType};
+use crate::logic::models::{Board, Colour, Coordinate, Side, Unit, UnitType, WinningSide};
 
 fn generate_pawn(colour: Colour, x: i8, y: i8) -> Unit {
     Unit {
@@ -47,5 +47,6 @@ pub fn generate_board() -> Board {
         white_pieces: generate_pieces(Colour::White),
         black_pieces: generate_pieces(Colour::Black),
         human_player: Colour::Black,
+        winning_side: WinningSide::None,
     }
 }

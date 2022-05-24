@@ -53,10 +53,19 @@ pub struct Side {
 
 #[wasm_bindgen]
 #[derive(Copy, Clone)]
+pub enum WinningSide {
+    Black,
+    White,
+    None,
+}
+
+#[wasm_bindgen]
+#[derive(Copy, Clone)]
 pub struct Board {
     pub white_pieces: Side,
     pub black_pieces: Side,
     pub human_player: Colour,
+    pub winning_side: WinningSide,
 }
 
 #[derive(Clone)]
