@@ -1,11 +1,24 @@
 import { Colour, Unit, UnitType } from "wasm-ai-thingo";
 import getCellBackgroundColourForCoordinate from "./getCellBackgroundColour";
+import { BlackKing, BlackPawn, WhiteKing, WhitePawn } from "./icons";
 
 interface OccupiedCellProps {
     unit: Unit;
     onClick: (unit: Unit) => void;
     isSelected: boolean;
 }
+
+const getUnitIcon = (colour: Colour, unitType: UnitType) => {
+    if (unitType === UnitType.King) {
+        if (colour === Colour.Black) {
+            return BlackKing;
+        }
+
+        return WhiteKing;
+    }
+
+    return colour === Colour.White ? WhitePawn : BlackPawn;
+};
 
 const OccupiedCell = ({
     unit,
@@ -20,15 +33,17 @@ const OccupiedCell = ({
         },
         unit_type
     } = unit;
-    const unitSuffix = unit_type === UnitType.Pawn ? '' : 'K';
+    const UnitIcon = getUnitIcon(colour, unit_type);
 
     return (
     <div
         title={`${x}x , ${y}y`}
-        style={{ background: isSelected ? 'yellow' : getCellBackgroundColourForCoordinate(x, y), height: '100%', width: '100%', border: '1px lightgrey solid', textAlign: 'center', }}
+        style={{ background: isSelected ? '#CC9933' : getCellBackgroundColourForCoordinate(x, y), height: '100%', width: '100%', border: '1px lightgrey solid', textAlign: 'center', }}
         onClick={() => onClick(unit)}
         >
-        <span style={{ fontSize: 18 }}>{colour === Colour.Black ? `Black ${unitSuffix}` : `White ${unitSuffix}`}</span>
+        <div style={{ paddingTop: 10 }}>
+            <UnitIcon />
+        </div>
     </div>
     );
 };
