@@ -31,12 +31,18 @@ const CheckersBoard = () => {
         board.free();
     };
 
+    const onReset = () => {
+        setBoard(generateBoard());
+        board.free();
+    };
+
     const gameStateString = board.winning_side === WinningSide.None ? 'Active' :
         board.winning_side === WinningSide.White ? 'White has won' : 'Black has won';
 
     return (<div>
         <button disabled={lastBoard === null} onClick={onUndo} style={{ marginBottom: 10 }}>Undo</button>
         <label style={{ marginLeft: 10 }}>Game State: {gameStateString}</label>
+        <button onClick={onReset} style={{ marginBottom: 10, marginLeft: 10 }}>Reset</button>
         <Grid board={board} onMove={onMove} />
     </div>);
 };
