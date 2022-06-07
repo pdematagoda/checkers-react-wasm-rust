@@ -2,7 +2,7 @@ use crate::logic::movement::utilities::get_piece_being_jumped;
 use std::collections::HashMap;
 use web_sys::console;
 
-use crate::logic::models::get_key_for_unit;
+use crate::logic::models::{get_key_for_unit, Colour, UnitType};
 use crate::Unit;
 
 pub fn perform_move_and_get_active_pieces_with_moved_piece(
@@ -28,6 +28,15 @@ pub fn perform_move_and_get_active_pieces_with_moved_piece(
 
         unit_to_move.coordinate.x = to_x;
         unit_to_move.coordinate.y = to_y;
+
+        let should_become_king = match unit_to_move.colour {
+            Colour::White => to_y == 8,
+            Colour::Black => to_y == 1,
+        };
+
+        if should_become_king {
+            unit_to_move.unit_type = UnitType::King;
+        }
 
         modified_active_pieces.insert(get_key_for_unit(&unit_to_move), unit_to_move);
     } else {

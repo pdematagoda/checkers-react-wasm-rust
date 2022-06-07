@@ -51,5 +51,7 @@ pub fn get_valid_moves_for_piece(board: &Board, unit: &Unit) -> PossibleMoves {
     PossibleMoves {
         first: possible_valid_moves.pop(),
         second: possible_valid_moves.pop(),
+        third: possible_valid_moves.pop(),
+        fourth: possible_valid_moves.pop(),
     }
 }

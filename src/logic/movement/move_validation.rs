@@ -1,4 +1,4 @@
-use crate::logic::models::{Colour, Unit, BOARD_LENGTH, BOARD_WIDTH};
+use crate::logic::models::{Colour, Unit, UnitType, BOARD_LENGTH, BOARD_WIDTH};
 use crate::logic::movement::utilities::{get_active_piece_at_x_and_y, get_piece_being_jumped};
 use std::collections::HashMap;
 
@@ -17,6 +17,11 @@ fn can_do_move(unit: &Unit, to_x: i8, to_y: i8) -> bool {
     let is_valid_colour_move = match unit.colour {
         Colour::Black => y_change < 0,
         Colour::White => y_change > 0,
+    };
+
+    let is_valid_colour_move = match unit.unit_type {
+        UnitType::King => true,
+        _ => is_valid_colour_move,
     };
 
     if !is_valid_colour_move {
@@ -73,11 +78,29 @@ mod tests {
     #[test]
     fn get_potential_moves_for_a_middle_black_piece_with_no_other_pieces_nearby() {}
 
+    fn get_white_king_unit_with_coords(x: i8, y: i8) -> Unit {
+        Unit {
+            active: true,
+            colour: Colour::White,
+            unit_type: UnitType::King,
+            coordinate: Coordinate { x, y },
+        }
+    }
+
     fn get_white_unit_with_coords(x: i8, y: i8) -> Unit {
         Unit {
             active: true,
             colour: Colour::White,
             unit_type: UnitType::Pawn,
+            coordinate: Coordinate { x, y },
+        }
+    }
+
+    fn get_black_king_unit_with_coords(x: i8, y: i8) -> Unit {
+        Unit {
+            active: true,
+            colour: Colour::Black,
+            unit_type: UnitType::King,
             coordinate: Coordinate { x, y },
         }
     }
@@ -122,6 +145,22 @@ mod tests {
     }
 
     #[test]
+    fn white_king_cannot_move_backward_straight() {
+        assert_eq!(
+            can_do_move(&get_white_king_unit_with_coords(5, 5), 4, 5),
+            false
+        );
+    }
+
+    #[test]
+    fn white_king_can_move_backward() {
+        assert_eq!(
+            can_do_move(&get_white_king_unit_with_coords(4, 4), 3, 3),
+            true
+        );
+    }
+
+    #[test]
     fn white_cannot_move_backwards_from_a_corner() {
         assert_eq!(can_do_move(&get_white_unit_with_coords(1, 1), 0, 1), false);
     }
@@ -134,6 +173,22 @@ mod tests {
     #[test]
     fn black_pawn_cannot_move_backward() {
         assert_eq!(can_do_move(&get_black_unit_with_coords(6, 2), 5, 3), false);
+    }
+
+    #[test]
+    fn black_king_cannot_move_backward_straight() {
+        assert_eq!(
+            can_do_move(&get_black_king_unit_with_coords(5, 5), 6, 5),
+            false
+        );
+    }
+
+    #[test]
+    fn black_king_can_move_backward() {
+        assert_eq!(
+            can_do_move(&get_black_king_unit_with_coords(6, 2), 5, 3),
+            true
+        );
     }
 
     #[test]

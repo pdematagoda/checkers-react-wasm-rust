@@ -65,6 +65,14 @@ const isPossibleMove = (possibleMoves: PossibleMoves | null, x: number, y: numbe
         return true;
     }
 
+    if (possibleMoves.third && isPossibleCoordinate(possibleMoves.third, x, y)) {
+        return true;
+    }
+
+    if (possibleMoves.fourth && isPossibleCoordinate(possibleMoves.fourth, x, y)) {
+        return true;
+    }
+
     return false;
 };
 

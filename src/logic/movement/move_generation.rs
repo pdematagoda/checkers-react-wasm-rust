@@ -1,9 +1,7 @@
-use crate::logic::models::{get_key_for_x_and_y, Colour, Coordinate};
+use crate::logic::models::{get_key_for_x_and_y, Colour, Coordinate, UnitType};
 use crate::logic::movement::move_validation::validate_move;
 use crate::Unit;
 use std::collections::HashMap;
-
-use web_sys::console;
 
 fn get_y_change_for_colour(colour: Colour) -> i8 {
     let can_move_forward = colour == Colour::White;
@@ -32,10 +30,8 @@ fn get_jumping_coordinate_if_required(
     if let Some(_active_piece_at_move) =
         get_active_piece_at_x_and_y(active_pieces, possible_move.x, possible_move.y)
     {
-        let y_change = get_y_change_for_colour(piece.colour) * 2;
+        let y_change = (possible_move.y - piece.coordinate.y) * 2;
         let x_change = (possible_move.x - piece.coordinate.x) * 2;
-
-        console::log_1(&format!("Trying a jump!").into());
 
         return Coordinate {
             x: piece.coordinate.x + x_change,
@@ -69,6 +65,28 @@ pub fn get_potential_moves(active_pieces: &HashMap<String, Unit>, piece: &Unit) 
         },
     ));
 
+    if piece.unit_type == UnitType::King {
+        let y_change = y_change * -1;
+
+        possible_moves.push(get_jumping_coordinate_if_required(
+            active_pieces,
+            piece,
+            Coordinate {
+                x: piece.coordinate.x + 1,
+                y: piece.coordinate.y + y_change,
+            },
+        ));
+
+        possible_moves.push(get_jumping_coordinate_if_required(
+            active_pieces,
+            piece,
+            Coordinate {
+                x: piece.coordinate.x - 1,
+                y: piece.coordinate.y + y_change,
+            },
+        ));
+    }
+
     possible_moves
 }
 
@@ -84,4 +102,95 @@ pub fn get_valid_moves(active_pieces: &HashMap<String, Unit>, piece: &Unit) -> V
     }
 
     valid_moves
+}
+
+mod tests {
+    use super::*;
+    use crate::logic::models::*;
+
+    fn get_white_pawn_unit_with_coords(x: i8, y: i8) -> Unit {
+        Unit {
+            active: true,
+            colour: Colour::White,
+            unit_type: UnitType::Pawn,
+            coordinate: Coordinate { x, y },
+        }
+    }
+
+    fn get_white_king_unit_with_coords(x: i8, y: i8) -> Unit {
+        Unit {
+            active: true,
+            colour: Colour::White,
+            unit_type: UnitType::King,
+            coordinate: Coordinate { x, y },
+        }
+    }
+
+    fn get_black_king_unit_with_coords(x: i8, y: i8) -> Unit {
+        Unit {
+            active: true,
+            colour: Colour::Black,
+            unit_type: UnitType::King,
+            coordinate: Coordinate { x, y },
+        }
+    }
+
+    fn get_black_pawn_unit_with_coords(x: i8, y: i8) -> Unit {
+        Unit {
+            active: true,
+            colour: Colour::Black,
+            unit_type: UnitType::Pawn,
+            coordinate: Coordinate { x, y },
+        }
+    }
+
+    #[test]
+    fn get_valid_moves_for_a_middle_white_pawn_piece_with_no_other_pieces_nearby() {
+        let valid_moves = get_valid_moves(&HashMap::new(), &get_white_pawn_unit_with_coords(4, 4));
+
+        assert_eq!(
+            valid_moves,
+            vec![Coordinate { x: 5, y: 5 }, Coordinate { x: 3, y: 5 }]
+        );
+    }
+
+    #[test]
+    fn get_valid_moves_for_a_middle_white_king_piece_with_no_other_pieces_nearby() {
+        let valid_moves = get_valid_moves(&HashMap::new(), &get_white_king_unit_with_coords(4, 4));
+
+        assert_eq!(
+            valid_moves,
+            vec![
+                Coordinate { x: 5, y: 5 },
+                Coordinate { x: 3, y: 5 },
+                Coordinate { x: 5, y: 3 },
+                Coordinate { x: 3, y: 3 }
+            ]
+        );
+    }
+
+    #[test]
+    fn get_valid_moves_for_a_middle_black_pawn_piece_with_no_other_pieces_nearby() {
+        let valid_moves = get_valid_moves(&HashMap::new(), &get_black_pawn_unit_with_coords(4, 4));
+
+        assert_eq!(
+            valid_moves,
+            vec![Coordinate { x: 5, y: 3 }, Coordinate { x: 3, y: 3 }]
+        );
+    }
+
+    #[test]
+    fn get_valid_moves_for_a_middle_black_king_piece_with_no_other_pieces_nearby() {
+        let valid_moves = get_valid_moves(&HashMap::new(), &get_black_king_unit_with_coords(4, 4));
+
+        assert_eq!(
+            valid_moves,
+            vec![
+                Coordinate { x: 5, y: 3 },
+                Coordinate { x: 3, y: 3 },
+                Coordinate { x: 5, y: 5 },
+                Coordinate { x: 3, y: 5 }
+            ]
+        );
+    }
 }

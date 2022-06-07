@@ -19,7 +19,7 @@ pub enum UnitType {
 }
 
 #[wasm_bindgen]
-#[derive(Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Copy, Clone, PartialEq, Eq, Hash, Debug)]
 pub struct Coordinate {
     pub x: i8,
     pub y: i8,
@@ -78,6 +78,8 @@ pub struct InternalBoard {
 pub struct PossibleMoves {
     pub first: Option<Coordinate>,
     pub second: Option<Coordinate>,
+    pub third: Option<Coordinate>,
+    pub fourth: Option<Coordinate>,
 }
 
 pub fn get_key_for_x_and_y(x: i8, y: i8) -> String {
