@@ -128,7 +128,7 @@ const Grid = ({ board, onMove }: GridProps) => {
 
                     const cellContent = getCellContent();
 
-                return  <div style={{ gridColumn: x, gridRow: y}}>{cellContent}</div>;
+                return <div key={`${x}${y}`} style={{ gridColumn: x, gridRow: y}}>{cellContent}</div>;
           }));
         })}
     </div>);
