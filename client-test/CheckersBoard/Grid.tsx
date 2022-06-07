@@ -121,7 +121,7 @@ const Grid = ({ board, onMove }: GridProps) => {
                             );
                         }
 
-                        let emptyBackground = isPossibleMove(currentSelectionMoves, x, y) ? 'lightblue' : 'white';
+                        let emptyBackground = isPossibleMove(currentSelectionMoves, x, y) ? 'lightblue' : undefined;
 
                         return <EmptyCell background={emptyBackground} key={key} onClick={() => onEmptyCellSelection(x, y)} x={x} y={y} />;
                     };
