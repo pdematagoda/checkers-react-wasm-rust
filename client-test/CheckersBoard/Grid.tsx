@@ -37,8 +37,8 @@ const convertBoardToUnitDictionary = (board: Board): Map<string, Unit> => {
     // TODO: Figure this out, React tries to call the Grid component with an old (and now free-d Board), so swallow exceptions for now....
     try {
 
-        addSideToUnitDictionary(result, board.black_pieces);
-        addSideToUnitDictionary(result, board.white_pieces);
+        addSideToUnitDictionary(result, board.blackPieces);
+        addSideToUnitDictionary(result, board.whitePieces);
     } catch {}
 
     return result;

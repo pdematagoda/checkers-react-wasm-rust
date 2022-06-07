@@ -36,8 +36,8 @@ const CheckersBoard = () => {
         board.free();
     };
 
-    const gameStateString = board.winning_side === WinningSide.None ? 'Active' :
-        (board.winning_side === WinningSide.White ? 'White has won' : 'Black has won');
+    const gameStateString = board.winningSide === WinningSide.None ? 'Active' :
+        (board.winningSide === WinningSide.White ? 'White has won' : 'Black has won');
 
     return (<div>
         <button disabled={lastBoard === null} onClick={onUndo} style={{ marginBottom: 10 }}>Undo</button>

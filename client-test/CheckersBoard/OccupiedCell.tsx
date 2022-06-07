@@ -31,9 +31,9 @@ const OccupiedCell = ({
             x,
             y
         },
-        unit_type
+        unitType
     } = unit;
-    const UnitIcon = getUnitIcon(colour, unit_type);
+    const UnitIcon = getUnitIcon(colour, unitType);
 
     return (
     <div

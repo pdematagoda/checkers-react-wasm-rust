@@ -29,6 +29,7 @@ pub struct Coordinate {
 #[derive(Copy, Clone, PartialEq, Eq, Hash)]
 pub struct Unit {
     pub colour: Colour,
+    #[wasm_bindgen(js_name = unitType)]
     pub unit_type: UnitType,
     pub coordinate: Coordinate,
     pub active: bool,
@@ -62,9 +63,16 @@ pub enum WinningSide {
 #[wasm_bindgen]
 #[derive(Copy, Clone)]
 pub struct Board {
+    #[wasm_bindgen(js_name = whitePieces)]
     pub white_pieces: Side,
+
+    #[wasm_bindgen(js_name = blackPieces)]
     pub black_pieces: Side,
+
+    #[wasm_bindgen(js_name = humanPlayer)]
     pub human_player: Colour,
+
+    #[wasm_bindgen(js_name = winningSide)]
     pub winning_side: WinningSide,
 }
 
