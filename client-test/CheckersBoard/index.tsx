@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { doMove, generateBoard, Unit, initialiseEngine, Board, copyBoard } from "wasm-ai-thingo";
+import { doMove, generateBoard, Unit, initialiseEngine, Board, copyBoard, WinningSide } from "wasm-ai-thingo";
 import Grid from "./Grid";
 
 initialiseEngine();
@@ -31,8 +31,12 @@ const CheckersBoard = () => {
         board.free();
     };
 
+    const gameStateString = board.winning_side === WinningSide.None ? 'Active' :
+        board.winning_side === WinningSide.White ? 'White has won' : 'Black has won';
+
     return (<div>
         <button disabled={lastBoard === null} onClick={onUndo} style={{ marginBottom: 10 }}>Undo</button>
+        <label style={{ marginLeft: 10 }}>Game State: {gameStateString}</label>
         <Grid board={board} onMove={onMove} />
     </div>);
 };
