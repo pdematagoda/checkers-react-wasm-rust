@@ -100,10 +100,9 @@ const Grid = ({ board, onMove }: GridProps) => {
 
     const currentSelectionMoves = currentSelection ? getValidMovesForPiece(board, currentSelection) : null;
 
-    return (<div>
+    return (<div style={{ display: 'grid', gridTemplateColumns: 'repeat(9, 1fr)', gridAutoRows: 'minmax(100px, auto)', gap: 0}}>
         {[1,2,3,4,5,6,7,8].map((y) => {
-            return (<div key={y}>
-                {[1,2,3,4,5,6,7,8].map((x) => {
+            return ([1,2,3,4,5,6,7,8].map((x) => {
                 
                     const getCellContent = () => {
                         const key = `${x},${y}`;
@@ -124,23 +123,13 @@ const Grid = ({ board, onMove }: GridProps) => {
 
                         let emptyBackground = isPossibleMove(currentSelectionMoves, x, y) ? 'lightblue' : 'white';
 
-                        return <EmptyCell background={emptyBackground} key={key} onClick={() => onEmptyCellSelection(x, y)} />;
+                        return <EmptyCell background={emptyBackground} key={key} onClick={() => onEmptyCellSelection(x, y)} x={x} y={y} />;
                     };
 
                     const cellContent = getCellContent();
 
-                if (x === 1) {
-                    return (
-                        <>
-                            <div style={{ display: 'inline-block' }}>{y}</div>
-                            {cellContent}
-                        </>
-                    )
-                }
-
-                return cellContent;
-          })}
-            </div>);
+                return  <div style={{ gridColumn: x, gridRow: y}}>{cellContent}</div>;
+          }));
         })}
     </div>);
 };

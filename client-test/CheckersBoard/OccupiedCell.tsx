@@ -11,11 +11,25 @@ const OccupiedCell = ({
     onClick,
     isSelected
 }: OccupiedCellProps) => {
-    const unitSuffix = unit.unit_type === UnitType.Pawn ? '' : 'K';
+    const {
+        colour,
+        coordinate: {
+            x,
+            y
+        },
+        unit_type
+    } = unit;
+    const unitSuffix = unit_type === UnitType.Pawn ? '' : 'K';
 
-    return (<div style={{ minWidth: 50, minHeight: 50, background: isSelected ? 'yellow' : 'white', display: 'inline-block', border: '1px lightgrey solid', textAlign: 'center' }} onClick={() => onClick(unit)}>
-        <span style={{ fontSize: 18 }}>{unit.colour === Colour.Black ? `Black ${unitSuffix}` : `White ${unitSuffix}`}</span>
-    </div>);
+    return (
+    <div
+        title={`${x}x , ${y}y`}
+        style={{ background: isSelected ? 'yellow' : 'white', height: '100%', width: '100%', border: '1px lightgrey solid', textAlign: 'center', }}
+        onClick={() => onClick(unit)}
+        >
+        <span style={{ fontSize: 18 }}>{colour === Colour.Black ? `Black ${unitSuffix}` : `White ${unitSuffix}`}</span>
+    </div>
+    );
 };
 
 export default OccupiedCell;
